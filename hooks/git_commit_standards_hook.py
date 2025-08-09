@@ -34,6 +34,38 @@ def main():
     
     command = tool_input.get("command", "")
     
+    # FIRST: Check current branch - block commits to main/master
+    if re.search(r'\bgit\s+commit\b', command):
+        # Get current branch
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            current_branch = result.stdout.strip()
+            
+            if current_branch in ["main", "master", "production"]:
+                print(json.dumps({
+                    "decision": "block",
+                    "reason": (
+                        "❌ NEVER commit directly to main/master! Per CLAUDE.md GitHub Flow:\n\n"
+                        "1. Create feature branch:\n"
+                        "   git checkout -b feature/your-feature\n\n"
+                        "2. Make changes and commit to feature branch\n\n"
+                        "3. Push feature branch:\n"
+                        "   git push origin feature/your-feature\n\n"
+                        "4. Create Pull Request for review\n\n"
+                        "This ensures code review and prevents breaking production."
+                    )
+                }))
+                return 1
+        except:
+            # If we can't determine branch, check the command itself
+            pass
+    
     # Check for git commit commands
     if re.search(r'\bgit\s+commit\b', command):
         # Check for prohibited phrases in commit message
@@ -91,22 +123,50 @@ def main():
                         }))
                         return 1
     
-    # Check for git push without protection
-    if re.match(r'^git\s+push\s+', command):
-        # Check if pushing to main/master directly
-        if re.search(r'(main|master|production)\b', command):
+    # Check for git push to protected branches
+    if re.search(r'git\s+push', command):
+        # Check if pushing to main/master/production directly
+        if re.search(r'origin\s+(main|master|production)\b', command) or \
+           re.search(r'(main|master|production):(main|master|production)', command):
             print(json.dumps({
                 "decision": "block",
                 "reason": (
-                    "Don't push directly to main/master! Per CLAUDE.md:\n"
-                    "Follow GitHub Flow:\n"
-                    "  1. Create feature branch: git checkout -b feature/name\n"
-                    "  2. Push feature branch: git push origin feature/name\n"
-                    "  3. Create Pull Request\n"
-                    "  4. Review and merge via PR"
+                    "❌ Don't push directly to protected branches! Per CLAUDE.md GitHub Flow:\n\n"
+                    "1. Create feature branch:\n"
+                    "   git checkout -b feature/name\n\n"
+                    "2. Push feature branch:\n" 
+                    "   git push origin feature/name\n\n"
+                    "3. Create Pull Request\n\n"
+                    "4. Review and merge via PR\n\n"
+                    "Protected branches: main, master, production"
                 )
             }))
             return 1
+    
+    # Block git merge into protected branches
+    if re.search(r'git\s+merge', command):
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            current_branch = result.stdout.strip()
+            
+            if current_branch in ["main", "master", "production"]:
+                print(json.dumps({
+                    "decision": "block", 
+                    "reason": (
+                        "❌ Don't merge directly into protected branches!\n\n"
+                        "Use Pull Requests for merging into main/master.\n"
+                        "This ensures code review and CI/CD checks."
+                    )
+                }))
+                return 1
+        except:
+            pass
     
     # Check for dangerous git operations
     if re.search(r'git\s+push\s+.*--force(?!-with-lease)', command):
