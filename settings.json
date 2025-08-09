@@ -1,0 +1,85 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/python_file_limits_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/uv_package_management_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/testing_standards_hook.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/python_file_limits_hook.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/search_commands_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/git_commit_standards_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/uv_package_management_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/testing_standards_hook.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/search_commands_hook.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/ruff_lint_check_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/type_check_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/test_reminder_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PYTHON_HOOKS_PATH/hooks/code_quality_reminder_hook.py"
+          }
+        ]
+      }
+    ]
+  }
+}

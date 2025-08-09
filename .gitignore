@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+*.cover
+.hypothesis/
+
+# Logs
+*.log
+/tmp/
+
+# Claude Code specific
+.claude/
+*.flag
+/tmp/claude_modified_python_files.json
+
+# Build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Documentation
+docs/_build/
+
+# Virtual environments
+venv_linux/
+venv_mac/
+venv_windows/
