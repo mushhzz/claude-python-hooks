@@ -95,8 +95,9 @@ def main():
     elif tool_name == "Bash":
         command = tool_input.get("command", "")
         
-        # Check for pytest execution
-        if re.search(r'\bpytest\b', command):
+        # Check for pytest execution (but not in strings like PR titles)
+        # Only match pytest as a command, not within quoted strings
+        if re.match(r'^pytest\s', command) or re.search(r'[;&|]\s*pytest\s', command):
             # Ensure using uv run or venv_linux
             if not command.startswith("uv run") and "venv_linux" not in command:
                 print(json.dumps({

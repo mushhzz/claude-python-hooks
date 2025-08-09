@@ -104,7 +104,7 @@ def main():
             r'^python3\s+',
             r'^pytest\s+',
             r'^mypy\s+',
-            r'^ruff\s+',
+            # Note: ruff is excluded as it's a standalone Rust tool
         ]
         
         for pattern in python_patterns:
